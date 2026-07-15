@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<title>underground.signal : off-grid</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #9fe7ff;
+  font-family: "Courier New", monospace;
+  overflow: hidden;
+}
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ===== FLOATING FORMULAS ===== */
+.formula-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.formula {
+  position: absolute;
+  color: rgba(159,231,255,0.85);
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  animation: floatFormula linear forwards;
+  text-shadow: 0 0 12px rgba(77,210,255,0.6);
+}
+
+@keyframes floatFormula {
+  0%   { opacity: 0; transform: translateY(20px); }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-120px); }
+}
+
+/* ===== UI ===== */
+.wrapper {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  padding: 20px;
+}
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+button {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 1px solid #4dd2ff;
+  background: transparent;
+  color: #4dd2ff;
+  font-size: 26px;
+  cursor: pointer;
+  transition: .3s;
+}
+button:hover {
+  background: rgba(77,210,255,.15);
+  box-shadow: 0 0 22px rgba(77,210,255,.6);
+}
+.volume {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.volume label {
+  font-size: 10px;
+  opacity: 0.6;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 2px;
+  background: #4dd2ff;
+  outline: none;
+  opacity: 0.7;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4dd2ff;
+  cursor: pointer;
+}
+.text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.main-text { font-size: 16px; letter-spacing: 1.2px; }
+.sub-text { font-size: 13px; letter-spacing: 2px; opacity: 0.9; }
+.footer-text { font-size: 10px; letter-spacing: 1px; opacity: 0.45; }
+
+/* ===== LINKS ===== */
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+.row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.link a {
+  color: #4dd2ff;
+  text-decoration: none;
+  border-bottom: 1px dotted #4dd2ff;
+  transition: 0.3s;
+  font-size: 14px;
+}
+.link a:hover {
+  opacity: 0.8;
+  border-bottom: 1px solid #4dd2ff;
+}
+
+/* ===== MAGNETIC STORM ===== */
+@keyframes magnetPulse {
+  0% { box-shadow: 0 0 0 rgba(77,210,255,0.0); }
+  50% { box-shadow: 0 0 18px rgba(77,210,255,0.9); }
+  100% { box-shadow: 0 0 0 rgba(77,210,255,0.0); }
+}
+.magnet-storm {
+  animation: magnetPulse 1.4s infinite;
+  border-bottom: 1px solid #4dd2ff !important;
+}
+
+@media (max-width: 600px) {
+  button { width: 68px; height: 68px; font-size: 24px; }
+  .main-text { font-size: 14px; }
+  .sub-text { font-size: 12px; }
+  .row { gap: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+<div class="formula-layer" id="formulaLayer"></div>
+
+<div class="wrapper">
+
+  <div class="player">
+    <div class="controls">
+      <img src="1.png" alt="" style="width: 38px; height: auto; filter: invert(1) opacity(0.7); object-fit: contain;">
+      <button id="play">▶</button>
+      <div class="volume">
+        <label>volume</label>
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
+      </div>
+    </div>
+
+    <div class="text-block">
+      <div class="main-text">radio_underground.signal:off-grid.не для всіх.</div>
+      <div class="sub-text">24'7</div>
+      <div class="footer-text">ibonarium project 2026 by lavanda audit.january:</div>
+    </div>
+  </div>
+
+  <div class="links">
+
+    <!-- 1 ряд -->
+    <div class="row">
+      <div class="link"><a href="https://lavandaaudit.github.io/sun.lab.ii/" target="_blank">sun.ibonarium</a></div>
+      <div class="link"><a href="https://lavandaaudit.github.io/planet/" target="_blank">planet.radar</a></div>
+      <div class="link"><a href="https://lavandaaudit.github.io/moon/" target="_blank">moon.ibonarium</a></div>
+    </div>
+
+    <!-- 2 ряд -->
+    <div class="row">
+      <div class="link"><a href="https://lavandaaudit.github.io/ibonarium.ecology.radar/" target="_blank">ecology.radar</a></div>
+      <div class="link"><a href="#" id="translatorLink">.translator</a></div>
+      <div class="link"><a href="#" id="magnetLab" onclick="openMagnetLab()">.magnet.lab</a></div>
+    </div>
+
+    <!-- 3 ряд -->
+    <div class="row">
+      <div class="link"><a href="#" onclick="openCriptoLabLive()">cripto.lab.live</a></div>
+      <div class="link"><a href="#" onclick="openSocialLive()">lavanda.soft</a></div>
+      <div class="link"><a href="#" onclick="openIbonariumTV()">ibonarium.tv</a></div>
+    </div>
+
+    <!-- 4 ряд -->
+    <div class="row">
+      <div class="link"><a href="#" onclick="openSolarStability()">solar.stability</a></div>
+      <div class="link"><a href="#" onclick="openIModular01()">i.modular.1.3</a></div>
+      <div class="link"><a href="#" onclick="openIDrum32()">i.drum.32</a></div>
+    </div>
+
+    <!-- 5 ряд -->
+    <div class="row">
+      <div class="link"><a href="#" onclick="openEcoSystem()">eco.system</a></div>
+      <div class="link"><a href="#" onclick="openOceanLab()">ocean.lab</a></div>
+      <div class="link"><a href="#" onclick="openHumanityLab()">humanity.lab</a></div>
+    </div>
+
+    <!-- 6 ряд -->
+    <div class="row">
+      <div class="link"><a href="#" onclick="openIModularXIII()">i.modularXIII</a></div>
+      <div class="link"><a href="#" onclick="openAgroLab()">agro.ua.lab</a></div>
+      <div class="link"><a href="#" onclick="openPhGeoLab()">ARCHIVE.2026</a></div>
+    </div>
+
+  </div>
+</div>
+
+<audio id="audio" preload="none"></audio>
+
+<script>
+// ================= AUDIO =================
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("play");
+const volume = document.getElementById("volume");
+let playing = false;
+let reconnectAttempts = 0;
+const MAX_RECONNECT = 5;
+
+// Встановлюємо джерело стріму
+audio.src = "https://ice1.somafm.com/dronezone-128-mp3";
+
+volume.oninput = () => audio.volume = volume.value;
+
+// Обробка помилок та автоматичне перепідключення
+audio.onerror = (e) => {
+  console.warn("Audio error:", e);
+  if (playing && reconnectAttempts < MAX_RECONNECT) {
+    reconnectAttempts++;
+    setTimeout(() => {
+      audio.load();
+      audio.play().catch(err => console.warn("Reconnect failed:", err));
+    }, 2000);
+  }
+};
+
+// Скидання лічильника при успішному відтворенні
+audio.onplaying = () => {
+  reconnectAttempts = 0;
+};
+
+// Обробка буферизації
+audio.onwaiting = () => {
+  console.log("Buffering...");
+};
+
+playBtn.onclick = () => {
+  if (!playing) {
+    audio.volume = volume.value;
+    audio.play().then(() => {
+      playBtn.textContent = "■";
+      playing = true;
+    }).catch(err => {
+      console.warn("Play failed:", err);
+      playBtn.textContent = "▶";
+      playing = false;
+    });
+  } else {
+    audio.pause();
+    playBtn.textContent = "▶";
+    playing = false;
+  }
+};
+
+// ================= STARS =================
+const s = document.getElementById("stars");
+const ctx = s.getContext("2d");
+let W, H, stars = [];
+
+function resize() {
+  W = s.width = innerWidth;
+  H = s.height = innerHeight;
+  stars = Array.from({length: 160}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    z: Math.random() * W
+  }));
+}
+resize();
+addEventListener("resize", resize);
+
+function draw() {
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = "#4dd2ff";
+
+  stars.forEach(st => {
+    st.z -= 0.2;
+    if (st.z <= 0) st.z = W;
+    const k = 128 / st.z;
+    const x = (st.x - W/2) * k + W/2;
+    const y = (st.y - H/2) * k + H/2;
+    if (x > 0 && x < W && y > 0 && y < H) {
+      const size = (1 - st.z / W) * 2;
+      ctx.fillRect(x, y, size, size);
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ================= MAGNETIC STORM =================
+const magnetLink = document.getElementById("magnetLab");
+const KP_API = "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json";
+
+async function checkMagneticStorm() {
+  try {
+    const res = await fetch(KP_API, { cache: "no-store" });
+    const data = await res.json();
+    const last = data[data.length - 1];
+    
+    // ВИПРАВЛЕНО: використання властивості .Kp замість індексу [1]
+    const kp = parseFloat(last.Kp);
+    
+    if (kp >= 5) {
+      magnetLink.classList.add("magnet-storm");
+      magnetLink.title = `GEOMAGNETIC STORM · Kp=${kp}`;
+    } else {
+      magnetLink.classList.remove("magnet-storm");
+      magnetLink.title = `Geomagnetic calm · Kp=${kp}`;
+    }
+  } catch (err) {
+    console.warn("Magnetic data unavailable", err);
+  }
+}
+checkMagneticStorm();
+setInterval(checkMagneticStorm, 10 * 60 * 1000);
+
+// ================= LINKS =================
+function openSocialLive() { window.open("https://lavandaaudit.github.io/lavanda.soft/", "_blank"); }
+function openCriptoLabLive() { window.open("https://lavandaaudit.github.io/ibonarium.economy/", "_blank"); }
+function openIbonariumTV() { window.open("https://lavandaaudit.github.io/go./", "_blank"); }
+function openSolarStability() { window.open("https://lavandaaudit.github.io/human.stability.calendar/", "_blank"); }
+function openIModular01() { window.open("https://lavandaaudit.github.io/synthesizer/", "_blank"); }
+function openIModularXIII() { window.open("https://lavandaaudit.github.io/modularxiii/", "_blank"); }
+function openMagnetLab() { window.open("https://lavandaaudit.github.io/Geospace-Activity/", "_blank"); }
+function openIDrum32() { window.open("https://lavandaaudit.github.io/ibonarium.drum.machine.32.v1.3/", "_blank"); }
+function openEcoSystem() { window.open("https://lavandaaudit.github.io/ibonarium.eco.system.radar/", "_blank"); }
+function openOceanLab() { window.open("https://lavandaaudit.github.io/ocean.ibonarium.live.lab/", "_blank"); }
+function openHumanityLab() { window.open("https://lavandaaudit.github.io/chronos7d.ua/", "_blank"); }
+function openAgroLab() { window.open("https://lavandaaudit.github.io/ibonarium.agro.ua/", "_blank"); }
+function openPhGeoLab() { window.open("https://lavandaaudit.github.io/test2/", "_blank"); }
+
+// ================= TRANSLATOR LINK =================
+const translatorLink = document.getElementById("translatorLink");
+translatorLink.onclick = (e) => { e.preventDefault(); window.open("https://lavandaaudit.github.io/live.monitor.lab/", "_blank"); };
+
+// ================= FLOATING FORMULAS =================
+const formulas = [
+  "E = mc²",
+  "F = ma",
+  "∇·E = ρ/ε₀",
+  "∇×B = μ₀J",
+  "Δx·Δp ≥ ħ/2",
+  "iħ∂ψ/∂t = Ĥψ",
+  "S = k·lnΩ",
+  "a² + b² = c²",
+  "e^{iπ} + 1 = 0",
+  "lim x→∞ (1+1/x)^x = e",
+  "∂L/∂q − d/dt(∂L/∂q̇) = 0",
+  "R_{μν} − ½Rg_{μν} = 8πT_{μν}",
+  "φ(t) = A·sin(ωt + φ₀)"
+];
+const layer = document.getElementById("formulaLayer");
+
+function spawnFormula() {
+  const f = document.createElement("div");
+  f.className = "formula";
+  f.textContent = formulas[Math.floor(Math.random()*formulas.length)];
+  f.style.left = Math.random() * 80 + 10 + "%";
+  f.style.top = Math.random() * 80 + 10 + "%";
+  f.style.animationDuration = (12 + Math.random()*10) + "s";
+  layer.appendChild(f);
+  setTimeout(() => f.remove(), 22000);
+}
+setInterval(spawnFormula, 2600);
+
+</script>
+</body>
+</html>
+
