@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -9,6 +10,7 @@
 
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 html, body {
   width: 100%;
   height: 100%;
@@ -17,6 +19,7 @@ html, body {
   font-family: "Courier New", monospace;
   overflow: hidden;
 }
+
 canvas {
   position: fixed;
   inset: 0;
@@ -30,6 +33,7 @@ canvas {
   pointer-events: none;
   z-index: 1;
 }
+
 .formula {
   position: absolute;
   color: rgba(159,231,255,0.85);
@@ -41,9 +45,9 @@ canvas {
 }
 
 @keyframes floatFormula {
-  0%   { opacity: 0; transform: translateY(20px); }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-120px); }
 }
 
@@ -60,17 +64,20 @@ canvas {
   text-align: center;
   padding: 20px;
 }
+
 .player {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
 }
+
 .controls {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
 button {
   width: 78px;
   height: 78px;
@@ -82,20 +89,24 @@ button {
   cursor: pointer;
   transition: .3s;
 }
+
 button:hover {
   background: rgba(77,210,255,.15);
   box-shadow: 0 0 22px rgba(77,210,255,.6);
 }
+
 .volume {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
+
 .volume label {
   font-size: 10px;
   opacity: 0.6;
 }
+
 input[type="range"] {
   -webkit-appearance: none;
   width: 120px;
@@ -104,6 +115,7 @@ input[type="range"] {
   outline: none;
   opacity: 0.7;
 }
+
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 12px;
@@ -112,12 +124,14 @@ input[type="range"]::-webkit-slider-thumb {
   background: #4dd2ff;
   cursor: pointer;
 }
+
 .text-block {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin-top: 4px;
 }
+
 .main-text { font-size: 16px; letter-spacing: 1.2px; }
 .sub-text { font-size: 13px; letter-spacing: 2px; opacity: 0.9; }
 .footer-text { font-size: 10px; letter-spacing: 1px; opacity: 0.45; }
@@ -130,12 +144,14 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 10px;
   align-items: center;
 }
+
 .row {
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
   justify-content: center;
 }
+
 .link a {
   color: #4dd2ff;
   text-decoration: none;
@@ -143,7 +159,39 @@ input[type="range"]::-webkit-slider-thumb {
   transition: 0.3s;
   font-size: 14px;
 }
+
 .link a:hover {
+  opacity: 0.8;
+  border-bottom: 1px solid #4dd2ff;
+}
+
+/* ===== GAME.WORK ===== */
+/* Точна відповідність звичайним посиланням */
+.gamework-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0;
+}
+
+.link a.gamework-button {
+  color: #4dd2ff;
+  text-decoration: none;
+  border-bottom: 1px dotted #4dd2ff;
+  transition: 0.3s;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.link a.gamework-button:hover {
   opacity: 0.8;
   border-bottom: 1px solid #4dd2ff;
 }
@@ -154,6 +202,7 @@ input[type="range"]::-webkit-slider-thumb {
   50% { box-shadow: 0 0 18px rgba(77,210,255,0.9); }
   100% { box-shadow: 0 0 0 rgba(77,210,255,0.0); }
 }
+
 .magnet-storm {
   animation: magnetPulse 1.4s infinite;
   border-bottom: 1px solid #4dd2ff !important;
@@ -236,6 +285,18 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="link"><a href="#" onclick="openPhGeoLab()">ARCHIVE.2026</a></div>
     </div>
 
+    <!-- 7 ряд: GAME.WORK -->
+    <div class="gamework-row">
+      <div class="link">
+        <a
+          class="gamework-button"
+          href="https://lavandaaudit.github.io/legend_v3..0/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >GAME.WORK</a>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -246,20 +307,21 @@ input[type="range"]::-webkit-slider-thumb {
 const audio = document.getElementById("audio");
 const playBtn = document.getElementById("play");
 const volume = document.getElementById("volume");
+
 let playing = false;
 let reconnectAttempts = 0;
 const MAX_RECONNECT = 5;
 
-// Встановлюємо джерело стріму
 audio.src = "https://ice1.somafm.com/dronezone-128-mp3";
 
 volume.oninput = () => audio.volume = volume.value;
 
-// Обробка помилок та автоматичне перепідключення
 audio.onerror = (e) => {
   console.warn("Audio error:", e);
+
   if (playing && reconnectAttempts < MAX_RECONNECT) {
     reconnectAttempts++;
+
     setTimeout(() => {
       audio.load();
       audio.play().catch(err => console.warn("Reconnect failed:", err));
@@ -267,12 +329,10 @@ audio.onerror = (e) => {
   }
 };
 
-// Скидання лічильника при успішному відтворенні
 audio.onplaying = () => {
   reconnectAttempts = 0;
 };
 
-// Обробка буферизації
 audio.onwaiting = () => {
   console.log("Buffering...");
 };
@@ -280,6 +340,7 @@ audio.onwaiting = () => {
 playBtn.onclick = () => {
   if (!playing) {
     audio.volume = volume.value;
+
     audio.play().then(() => {
       playBtn.textContent = "■";
       playing = true;
@@ -288,6 +349,7 @@ playBtn.onclick = () => {
       playBtn.textContent = "▶";
       playing = false;
     });
+
   } else {
     audio.pause();
     playBtn.textContent = "▶";
@@ -298,17 +360,20 @@ playBtn.onclick = () => {
 // ================= STARS =================
 const s = document.getElementById("stars");
 const ctx = s.getContext("2d");
+
 let W, H, stars = [];
 
 function resize() {
   W = s.width = innerWidth;
   H = s.height = innerHeight;
+
   stars = Array.from({length: 160}, () => ({
     x: Math.random() * W,
     y: Math.random() * H,
     z: Math.random() * W
   }));
 }
+
 resize();
 addEventListener("resize", resize);
 
@@ -319,17 +384,22 @@ function draw() {
 
   stars.forEach(st => {
     st.z -= 0.2;
+
     if (st.z <= 0) st.z = W;
+
     const k = 128 / st.z;
     const x = (st.x - W/2) * k + W/2;
     const y = (st.y - H/2) * k + H/2;
+
     if (x > 0 && x < W && y > 0 && y < H) {
       const size = (1 - st.z / W) * 2;
       ctx.fillRect(x, y, size, size);
     }
   });
+
   requestAnimationFrame(draw);
 }
+
 draw();
 
 // ================= MAGNETIC STORM =================
@@ -341,10 +411,9 @@ async function checkMagneticStorm() {
     const res = await fetch(KP_API, { cache: "no-store" });
     const data = await res.json();
     const last = data[data.length - 1];
-    
-    // ВИПРАВЛЕНО: використання властивості .Kp замість індексу [1]
+
     const kp = parseFloat(last.Kp);
-    
+
     if (kp >= 5) {
       magnetLink.classList.add("magnet-storm");
       magnetLink.title = `GEOMAGNETIC STORM · Kp=${kp}`;
@@ -352,31 +421,75 @@ async function checkMagneticStorm() {
       magnetLink.classList.remove("magnet-storm");
       magnetLink.title = `Geomagnetic calm · Kp=${kp}`;
     }
+
   } catch (err) {
     console.warn("Magnetic data unavailable", err);
   }
 }
+
 checkMagneticStorm();
 setInterval(checkMagneticStorm, 10 * 60 * 1000);
 
 // ================= LINKS =================
-function openSocialLive() { window.open("https://lavandaaudit.github.io/lavanda.soft/", "_blank"); }
-function openCriptoLabLive() { window.open("https://lavandaaudit.github.io/ibonarium.economy/", "_blank"); }
-function openIbonariumTV() { window.open("https://lavandaaudit.github.io/tv.ibonarium.online/", "_blank"); }
-function openSolarStability() { window.open("https://lavandaaudit.github.io/human.stability.calendar/", "_blank"); }
-function openIModular01() { window.open("https://lavandaaudit.github.io/synthesizer/", "_blank"); }
-function openIModularXIII() { window.open("https://lavandaaudit.github.io/modularxiii/", "_blank"); }
-function openMagnetLab() { window.open("https://lavandaaudit.github.io/Geospace-Activity/", "_blank"); }
-function openIDrum32() { window.open("https://lavandaaudit.github.io/ibonarium.drum.machine.32.v1.3/", "_blank"); }
-function openEcoSystem() { window.open("https://lavandaaudit.github.io/ibonarium.eco.system.radar/", "_blank"); }
-function openOceanLab() { window.open("https://lavandaaudit.github.io/ocean.ibonarium.live.lab/", "_blank"); }
-function openHumanityLab() { window.open("https://lavandaaudit.github.io/chronos7d.ua/", "_blank"); }
-function openAgroLab() { window.open("https://lavandaaudit.github.io/ibonarium.agro.ua/", "_blank"); }
-function openPhGeoLab() { window.open("https://lavandaaudit.github.io/test2/", "_blank"); }
+function openSocialLive() {
+  window.open("https://lavandaaudit.github.io/lavanda.soft/", "_blank");
+}
+
+function openCriptoLabLive() {
+  window.open("https://lavandaaudit.github.io/ibonarium.economy/", "_blank");
+}
+
+function openIbonariumTV() {
+  window.open("https://lavandaaudit.github.io/tv.ibonarium.online/", "_blank");
+}
+
+function openSolarStability() {
+  window.open("https://lavandaaudit.github.io/human.stability.calendar/", "_blank");
+}
+
+function openIModular01() {
+  window.open("https://lavandaaudit.github.io/synthesizer/", "_blank");
+}
+
+function openIModularXIII() {
+  window.open("https://lavandaaudit.github.io/modularxiii/", "_blank");
+}
+
+function openMagnetLab() {
+  window.open("https://lavandaaudit.github.io/Geospace-Activity/", "_blank");
+}
+
+function openIDrum32() {
+  window.open("https://lavandaaudit.github.io/ibonarium.drum.machine.32.v1.3/", "_blank");
+}
+
+function openEcoSystem() {
+  window.open("https://lavandaaudit.github.io/ibonarium.eco.system.radar/", "_blank");
+}
+
+function openOceanLab() {
+  window.open("https://lavandaaudit.github.io/ocean.ibonarium.live.lab/", "_blank");
+}
+
+function openHumanityLab() {
+  window.open("https://lavandaaudit.github.io/chronos7d.ua/", "_blank");
+}
+
+function openAgroLab() {
+  window.open("https://lavandaaudit.github.io/ibonarium.agro.ua/", "_blank");
+}
+
+function openPhGeoLab() {
+  window.open("https://lavandaaudit.github.io/test2/", "_blank");
+}
 
 // ================= TRANSLATOR LINK =================
 const translatorLink = document.getElementById("translatorLink");
-translatorLink.onclick = (e) => { e.preventDefault(); window.open("https://lavandaaudit.github.io/live.monitor.lab/", "_blank"); };
+
+translatorLink.onclick = (e) => {
+  e.preventDefault();
+  window.open("https://lavandaaudit.github.io/live.monitor.lab/", "_blank");
+};
 
 // ================= FLOATING FORMULAS =================
 const formulas = [
@@ -394,21 +507,25 @@ const formulas = [
   "R_{μν} − ½Rg_{μν} = 8πT_{μν}",
   "φ(t) = A·sin(ωt + φ₀)"
 ];
+
 const layer = document.getElementById("formulaLayer");
 
 function spawnFormula() {
   const f = document.createElement("div");
+
   f.className = "formula";
   f.textContent = formulas[Math.floor(Math.random()*formulas.length)];
   f.style.left = Math.random() * 80 + 10 + "%";
   f.style.top = Math.random() * 80 + 10 + "%";
   f.style.animationDuration = (12 + Math.random()*10) + "s";
+
   layer.appendChild(f);
+
   setTimeout(() => f.remove(), 22000);
 }
+
 setInterval(spawnFormula, 2600);
 
 </script>
 </body>
 </html>
-
